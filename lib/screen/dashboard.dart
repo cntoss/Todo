@@ -88,7 +88,7 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                             }),
                         // today
                         FutureBuilder(
-                            future: todoHelper.getFilteredTodo(DateTime.now().add(Duration(days: 1)).toString().substring(0,10)),
+                            future: todoHelper.getFilteredTodo(DateTime.now().toString().substring(0,10)),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
@@ -97,7 +97,7 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                             }),
                         //tomorrow
                         FutureBuilder(
-                            future: todoHelper.getFilteredTodo(DateTime.now().add(Duration(days: 2)).toString().substring(0,10)),
+                            future: todoHelper.getFilteredTodo(DateTime.now().add(Duration(days: 1)).toString().substring(0,10)),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
