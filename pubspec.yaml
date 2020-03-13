@@ -39,7 +39,9 @@ dev_dependencies:
   toast: ^0.1.3
   path:
   provider: ^4.0.4
-
+  contacts_service: ^0.3.10
+  permission_handler: '^4.4.0+hotfix.1'
+  call_log: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

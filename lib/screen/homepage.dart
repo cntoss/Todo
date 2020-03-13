@@ -21,10 +21,10 @@ class _HomePageState extends State<HomePage> {
         return DashBoard();
         break;
       case 1:
-        return CallList();
+        return ContactList();
         break;
       case 2:
-        return ContactList();
+        return CallList();
       }
   }
 

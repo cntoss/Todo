@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:toast/toast.dart';
+import 'package:toast/toast.dart';
 import 'package:flutter/services.dart';
 import 'package:unlimit/model/todo_model.dart';
 import 'package:unlimit/controller/todo_helper.dart';
 import 'package:date_format/date_format.dart';
 import 'package:intl/intl.dart';
+import 'package:unlimit/service/tab_value.dart';
 
 class TodoDetails extends StatefulWidget {
   final String appBarTitle;
@@ -42,7 +43,7 @@ class TodoDetailsState extends State<TodoDetails> {
   String createdAt;
   String _value;
   bool isTyped = false;
-
+ var newTab = Singleton;
   @override
   void initState() {
     super.initState();
@@ -74,10 +75,19 @@ class TodoDetailsState extends State<TodoDetails> {
   }
 
   _setLinkedTodo() {
+    var varDate;
+    if( todo.createdAt == ' ') {
+      if(newTab.tabIndex == 0) {
+        varDate = DateTime.now();
+      } else if(newTab.tabIndex == 1) {
+        varDate = DateTime.now().add(Duration(days: 1));
+      } else {
+        varDate = DateTime.now().add(Duration(days: 2));
+      }
+    } else {
+      varDate = DateTime.parse(todo.createdAt);
+    }
     setState(() {
-      var varDate = todo.createdAt == ' '
-          ? DateTime.now()
-          : DateTime.parse(todo.createdAt);
       createdAt = formatDate(varDate, [yyyy, '-', mm, '-', dd]).toString();
       _isCompleted = todo.completed == 1 ? true : false;
     });
@@ -464,11 +474,10 @@ class TodoDetailsState extends State<TodoDetails> {
   }
 
   _showToastMessage(BuildContext context, String message) {
-    /*return Toast.show(message, context,
+    return Toast.show(message, context,
         duration: Toast.LENGTH_LONG,
         gravity: Toast.BOTTOM,
         backgroundColor: Colors.teal,
         textColor: Colors.white);
-  }*/
   }
-}
+  }

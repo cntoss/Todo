@@ -18,8 +18,8 @@ class UnLimited extends StatelessWidget {
           fontFamily: 'sans serif',
           primarySwatch: Colors.teal,
         ),
-        home: SplashScreen(),
-        initialRoute: SplashScreen.id,
+        home: HomePage(),
+        initialRoute: HomePage.id,
         routes: {
           SplashScreen.id: (context) => SplashScreen(),
           HomePage.id: (context) => HomePage(),

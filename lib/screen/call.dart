@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:toast/toast.dart';
-import 'package:date_format/date_format.dart';
-import 'package:sqflite/sqflite.dart';
-//import 'package:delta_sales_crm/screen/todo/FloatingButtonDateWise.dart';
-import 'add_todo.dart';
-import 'package:unlimit/model/todo_model.dart';
-import 'package:unlimit/controller/todo_helper.dart';
+import 'dart:async';
+
+import 'package:call_log/call_log.dart';
 
 class CallList extends StatefulWidget {
   static const String id = "call_screen";
@@ -15,122 +10,64 @@ class CallList extends StatefulWidget {
 }
 
 class _CallListState extends State<CallList> {
-  TodoHelper todoHelper = TodoHelper();
-  List<Todo> todoList = List();
-  int count = 0;
-
+  Iterable<CallLogEntry> _callLogEntries = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    starter();
   }
 
-
-  @override
-  Widget build(BuildContext context) {
-    //main function
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.only(left: 4.0, right: 4.0),
-          children: <Widget>[
-            FutureBuilder(
-                future: todoHelper.getTodoList(),
-                builder:  (context, snapshot) {
-                  return snapshot.data != null
-                      ? listViewWidget(snapshot.data)
-                      : Container();
-                  //Center(child: Text('no response',style: TextStyle(height: 20.0,color: Colors.red),),);
-                }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  _setCheck(bool checkable, Todo todo){
-    if(checkable == true){
-      setState(() {
-        todo.completed = 1;
-      });
-      todoHelper.updateTodo(todo);
-    } else {
-      setState(() {
-        todo.completed = 0;
-      });
-      todoHelper.updateTodo(todo);
-    }
-  }
-
-  void navigateToDetail(Todo todo, String name) async {
-    bool result =
-    await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return TodoDetails(todo, name);
-    }));
-
-    if (result == true) {
-      updateListView();
-    }
-  }
-
-  void updateListView() {
-    final Future<Database> dbFuture = todoHelper.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Todo>> todoListFuture = todoHelper.getTodoList();
-      todoListFuture.then((todoList) {
-        if(!mounted) return;
-        setState(() {
-          this.todoList = todoList;
-          this.count = todoList.length;
-        });
-      });
+  starter() async{
+    var result = await CallLog.query();
+    setState(() {
+      _callLogEntries = result;
     });
   }
 
-  Widget listViewWidget(List<Todo> todo) {
-    return Container(
-      child: ListView.separated(
-          shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
-          itemCount: todo.length,
-          separatorBuilder: (BuildContext context, int index) => Padding(
-            padding: const EdgeInsets.only(left: 65.0),
-            child: Divider(
-              height: 1,
-              thickness: 2.0,
-            ),
-          ),
-          padding: const EdgeInsets.all(2.0),
-          itemBuilder: (context, position) {
-            bool completed = (todo[position].completed == 0) ? false : true;
+  @override
+  Widget build(BuildContext context) {
+    var mono = TextStyle(fontFamily: 'monospace');
 
-            return ListTile(
-                title: Text('${todo[position].title}'),
-                leading: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                        child: Icon(Icons.create_new_folder, color: Colors.black)
-                    )),
-                trailing: Checkbox(value: completed, activeColor: Colors.teal, onChanged: (bool value){
-                  completed = value;
-                  setState(() {
-                    completed = value;
-                  });
-                  _setCheck(completed, todo[position]);
-                }),
-                onTap: () async{
-                  navigateToDetail(
-                      todo[position], 'Edit Todo');
-                  print('edit');
-                  debugPrint('FAB clicked');
-                }
-            );
-          }),
+    var children = <Widget>[];
+
+    _callLogEntries.forEach((entry) {
+      children.add(
+        Column(
+          children: <Widget>[
+            Divider(),
+            Text('NUMBER   : ${entry.number}', style: mono),
+            Text('NAME     : ${entry.name}', style: mono),
+            Text('TYPE     : ${entry.callType}', style: mono),
+            Text('DATE     : ${DateTime.fromMillisecondsSinceEpoch(entry.timestamp)}', style: mono),
+            Text('DURATION :  ${entry.duration}', style: mono),
+          ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+        ),
+      );
+    });
+
+    return Scaffold(
+      appBar: AppBar(title: Center(child: Text('Call Log'))),
+      body: children.length >0 ?
+      SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(children: children),
+            ),
+          ],
+        )
+      ) : Center(
+        child: SizedBox(
+          height: 100,
+          width: 100,
+          child: CircularProgressIndicator()),
+      )
     );
   }
-
 }
 
 

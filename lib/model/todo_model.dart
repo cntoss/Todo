@@ -42,7 +42,16 @@ class Todo {
       this._createdAt = newOrg;
     }
   }
+   int convertTo(bool value) {
+    if( value == true) return 1;
+    else return 0;
+   }
 
+  Todo.fromMap(Map myMap){
+    this._completed = convertTo(myMap["completed"]);
+    this._title =  myMap["title"];
+    this._createdAt = ' ';
+  }
 
   // Convert a Note object into a Map object
   Map<String, dynamic> toMap() {

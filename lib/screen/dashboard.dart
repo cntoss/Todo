@@ -9,6 +9,8 @@ import 'package:unlimit/controller/todo_helper.dart';
 import 'package:unlimit/layout/todo_floating.dart';
 import 'drawer.dart';
 import 'package:unlimit/service/tab_value.dart';
+//import 'package:unlimit/service/networkcall.dart';
+import 'podo.dart';
 class DashBoard extends StatefulWidget {
   static const String id = "dashboard_screen";
   @override
@@ -81,12 +83,12 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
-                                  : Container();
+                                  : TodoServerPage();
                               //Center(child: Text('no response',style: TextStyle(height: 20.0,color: Colors.red),),);
                             }),
                         // today
                         FutureBuilder(
-                            future: todoHelper.getTodoList(),
+                            future: todoHelper.getFilteredTodo(DateTime.now().add(Duration(days: 1)).toString().substring(0,10)),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
@@ -95,7 +97,7 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                             }),
                         //tomorrow
                         FutureBuilder(
-                            future: todoHelper.getTodoList(),
+                            future: todoHelper.getFilteredTodo(DateTime.now().add(Duration(days: 2)).toString().substring(0,10)),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
@@ -170,7 +172,6 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
           padding: const EdgeInsets.all(2.0),
           itemBuilder: (context, position) {
             bool completed = (todo[position].completed == 0) ? false : true;
-
             return ListTile(
                 title: Text('${todo[position].title}'),
                 leading: Padding(

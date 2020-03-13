@@ -114,11 +114,10 @@ class TodoHelper {
     return todoList;
   }
   
-/*
   Future<List<Todo>> getFilteredTodo(String newDate) async {
     int checkable = 0;
     Database db = await this.database;
-    var actMapList = await db.rawQuery('SELECT *  from $actTable WHERE $colCompleted = $checkable AND $colStart = ?', ['$newDate']);
+    var actMapList = await db.rawQuery('SELECT *  from $actTable WHERE $colCompleted = $checkable AND $colCreatedAt = ?', ['$newDate']);
     // Get 'Map List' from database
     int count = actMapList.length;
     List<Todo> todoList = List<Todo>();
@@ -128,6 +127,5 @@ class TodoHelper {
     }
     return todoList;
   }
-*/
 
 }
