@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//import 'package:toast/toast.dart';
-import 'package:date_format/date_format.dart';
 import 'package:sqflite/sqflite.dart';
 import 'add_todo.dart';
 import 'package:unlimit/model/todo_model.dart';
@@ -9,8 +6,12 @@ import 'package:unlimit/controller/todo_helper.dart';
 import 'package:unlimit/layout/todo_floating.dart';
 import 'drawer.dart';
 import 'package:unlimit/service/tab_value.dart';
-//import 'package:unlimit/service/networkcall.dart';
-import 'podo.dart';
+//import 'podo.dart';
+import 'package:unlimit/custom_provider/json_response.dart';
+/*
+import 'package:unlimit/custom_provider/app_state.dart';
+import 'package:provider/provider.dart';
+import 'package:unlimit/custom_provider/response_display.dart';*/
 class DashBoard extends StatefulWidget {
   static const String id = "dashboard_screen";
   @override
@@ -33,6 +34,11 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
       newTab.tabIndex = tabController.index;
       print(newTab.tabIndex);
     });
+    todoHelper.getCount().then((value) {
+      setState(() {
+        count = value;
+      });
+    });
   }
 
 @override
@@ -43,7 +49,7 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
   }
   @override
   Widget build(BuildContext context) {
-    final _kTabs = <Tab>[
+   final _kTabs = <Tab>[
       Tab(text: 'All'),
       Tab(text: 'Today',),
       Tab(text: 'Tomorrow'),
@@ -78,21 +84,21 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                       controller: tabController,
                       children: [
                         //all
-                        FutureBuilder(
+                     count != null ?   FutureBuilder(
                             future: todoHelper.getTodoList(),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
-                                  : TodoServerPage();
+                                  : CircularProgressIndicator();
                               //Center(child: Text('no response',style: TextStyle(height: 20.0,color: Colors.red),),);
-                            }),
+                            }) :JsonResponse(),
                         // today
                         FutureBuilder(
                             future: todoHelper.getFilteredTodo(DateTime.now().toString().substring(0,10)),
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
-                                  : Container();
+                                  : CircularProgressIndicator();
                               //Center(child: Text('no response',style: TextStyle(height: 20.0,color: Colors.red),),);
                             }),
                         //tomorrow
@@ -101,7 +107,7 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
                             builder:  (context, snapshot) {
                               return snapshot.data != null
                                   ? listViewWidget(snapshot.data)
-                                  : Container();
+                                  : CircularProgressIndicator();
                               //Center(child: Text('no response',style: TextStyle(height: 20.0,color: Colors.red),),);
                             }),
                       ]),
@@ -132,12 +138,22 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
   }
 
   void navigateToDetail(Todo todo, String name) async {
-    bool result =
-    await Navigator.push(context, MaterialPageRoute(builder: (context) {
+    bool result =  await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return TodoDetails(todo, name);
     }));
 
     if (result == true) {
+      todoHelper.getCount().then((value) {
+        if(value != null) {
+          setState(() {
+            count = value;
+          });
+        } else {
+          setState(() {
+            count = null;
+          });
+        }
+       });
       updateListView();
     }
   }
@@ -150,7 +166,6 @@ class _DashBoardState extends State<DashBoard> with SingleTickerProviderStateMix
         if(!mounted) return;
         setState(() {
           this.todoList = todoList;
-          this.count = todoList.length;
         });
       });
     });

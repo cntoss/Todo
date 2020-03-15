@@ -95,9 +95,9 @@ class TodoHelper {
     //count todo
   Future<int> getCount() async {
     Database db = await this.database;
-    List<Map<String, dynamic>> x =
-    await db.rawQuery('SELECT COUNT (*) from $actTable');
+    List<Map<String, dynamic>> x =  await db.query(actTable);
     int result = Sqflite.firstIntValue(x);
+    print('count is $result');
     return result;
   }
 

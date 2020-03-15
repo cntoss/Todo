@@ -4,7 +4,8 @@ import 'screen/homepage.dart';
 import 'screen/contact.dart';
 import 'screen/call.dart';
 import 'screen/dashboard.dart';
-
+import 'custom_provider/app_state.dart';
+import 'package:provider/provider.dart';
 void main() async {
   runApp(new UnLimited());
 }
@@ -18,7 +19,11 @@ class UnLimited extends StatelessWidget {
           fontFamily: 'sans serif',
           primarySwatch: Colors.teal,
         ),
-        home: SplashScreen(),
+        home: ChangeNotifierProvider<AppState>(
+            create: (_) {
+              return AppState();
+            },
+            child: SplashScreen()),
         initialRoute: SplashScreen.id,
         routes: {
           SplashScreen.id: (context) => SplashScreen(),

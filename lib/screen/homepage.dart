@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'dashboard.dart';
 import 'call.dart';
 import 'contact.dart';
-
 class HomePage extends StatefulWidget {
   static String id = "home-page";
 
